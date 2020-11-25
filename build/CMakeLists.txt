@@ -9,5 +9,6 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin )
 add_executable(
     shader-injector 
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/Args/ArgsParser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/IO/FolderScanner/FolderScanner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/main.cpp
 )
