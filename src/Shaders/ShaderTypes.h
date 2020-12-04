@@ -11,14 +11,6 @@ namespace ShaderInjector {
         kGeometry = 2
     };
 
-    // one value per type
-    const char* SHADER_PROGRAM_EXTENSIONS[] = 
-    {
-        ".vert", // vertex
-        ".frag", // fragment
-        ".geom" // geometry
-    };
-
     /**
     * Shader file found in the filesystem
     */
@@ -28,6 +20,16 @@ namespace ShaderInjector {
         std::string path;
     };
     
+    /**
+    * Shader program files composed by: 
+    * a vertex file, a fragment file and a geometry file
+    */
+    struct shader_program_t
+    {
+        shader_file_t *vertexProgramFile;
+        shader_file_t *fragmentProgramFile;
+        shader_file_t *geometryProgramFile;
+    };
 }
 
 #endif // SHADER_TYPES_H

@@ -6,6 +6,15 @@ using namespace ShaderInjector;
 
 #define internal static
 
+internal void clearOptions(int optc, ShaderInjector::Args::cli_option_t *optv)
+{
+    for(int i = 0; i < optc; ++i)
+    {
+        optv[i].defined = false;
+        optv[i].value = "";
+    }
+}
+
 Args::cli_option_t Args::defineProgramArg(const std::string &flag, const std::string &option, const std::string &description, bool isRequired, bool requiresValue)
 {
     cli_option_t opt = {};
@@ -18,6 +27,74 @@ Args::cli_option_t Args::defineProgramArg(const std::string &flag, const std::st
     opt.requiresValue = requiresValue;
 
     return opt;
+}
+
+internal inline void printOption(const Args::cli_option_t *opt)
+{
+    printf("--%s, -%s: %s\n", opt->option.c_str(), opt->flag.c_str(), opt->description.c_str());
+}
+
+void Args::printUsage(const std::string &programName, int optc, Args::cli_option_t *optv)
+{
+    std::string optionsRequired;
+    std::string optionsOptional;
+    
+    for(int i = 0; i < optc; ++i)
+    {
+        const Args::cli_option_t *opt = optv + i;
+
+        std::string optionStr = "--" + opt->option;
+        if(opt->requiresValue)
+        {
+            optionStr += " <value>";
+        }
+
+        if(i < optc - 1)
+        {
+            optionStr += " ";
+        }
+
+        if(opt->isRequired)
+        {
+            optionsRequired += optionStr;
+        }
+        else
+        {
+            optionsOptional += optionStr;
+        }
+    }
+
+    if(optionsRequired.size() > 0)
+    {
+        optionsRequired = optionsRequired.substr(0, optionsRequired.size() - 1);
+    }
+
+    if(optionsOptional.size() > 0)
+    {
+        optionsOptional = "( " + optionsOptional + " )";
+    }
+
+    printf("\nUsage: %s %s %s\n", programName.c_str(), optionsRequired.c_str(), optionsOptional.c_str());
+
+    printf("\nRequired:\n");
+    for(int i = 0; i < optc; ++i)
+    {
+        const Args::cli_option_t *opt = optv + i;
+        if(opt->isRequired)
+        {
+            printOption(opt);
+        }
+    }
+
+    printf("\nOptional:\n");
+    for(int i = 0; i < optc; ++i)
+    {
+        const Args::cli_option_t *opt = optv + i;
+        if(!opt->isRequired)
+        {
+            printOption(opt);
+        }
+    }
 }
 
 enum OPTION_ID_FIELDS
@@ -58,6 +135,8 @@ internal Args::cli_option_t* findOption(int optc, Args::cli_option_t *optv, OPTI
 // false when some unexpected token found or a required option was missing
 bool Args::parseProgramArgs(int argc, char** argv, int optc, cli_option_t *optv)
 {
+    clearOptions(optc, optv);
+
     for(int i = 0; i < argc; ++i)
     {
         std::string arg(argv[i]);

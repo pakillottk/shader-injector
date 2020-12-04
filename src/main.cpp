@@ -2,15 +2,7 @@
 #include <cassert>
 
 #include "Args/ArgsParser.h"
-
-static void clearOptions(int optc, ShaderInjector::Args::cli_option_t *optv)
-{
-    for(int i = 0; i < optc; ++i)
-    {
-        optv[i].defined = false;
-        optv[i].value = "";
-    }
-}
+#include "IO/FolderScanner/FolderScanner.h"
 
 int main(int argc, char** argv)
 {
@@ -18,37 +10,15 @@ int main(int argc, char** argv)
     options[0] = ShaderInjector::Args::defineProgramArg("d", "dummy", "This is a dummy option", true, false);
     options[1] = ShaderInjector::Args::defineProgramArg("v", "value", "This is an option that requires a value", false, true);
 
-    char* fakeArgs1[] = 
-    {
-        "-d",
-        "-v",
-        "someValue"
-    };
-    assert(ShaderInjector::Args::parseProgramArgs(3, fakeArgs1, 2, options));
-    clearOptions(2, options);
+    ShaderInjector::Args::printUsage(*argv, 2, options);
 
-    char* fakeArgs2[] = 
-    {
-        "--dummy"
-    };
-    assert(ShaderInjector::Args::parseProgramArgs(1, fakeArgs2, 2, options));
-    clearOptions(2, options);
+    std::vector<ShaderInjector::shader_file_t> shaderFiles = ShaderInjector::IO::FolderScanner::scanFolder("test");
 
-    char* fakeArgs3[] = 
+    printf("\nShaders found:\n");
+    for(size_t i = 0; i < shaderFiles.size(); ++i)
     {
-        "-d",
-        "--value"
-    };
-    assert(!ShaderInjector::Args::parseProgramArgs(2, fakeArgs3, 2, options));
-    clearOptions(2, options);
-
-    char* fakeArgs4[] = 
-    {
-        "-v",
-        "someValue"
-    };
-    assert(!ShaderInjector::Args::parseProgramArgs(2, fakeArgs4, 2, options));
-    clearOptions(2, options);
+        printf("%s\n", shaderFiles[i].path.c_str());
+    }
 
     return 0;
 }

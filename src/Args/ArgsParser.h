@@ -30,6 +30,8 @@ namespace ShaderInjector { namespace Args  {
 
     cli_option_t defineProgramArg(const std::string &flag, const std::string &option, const std::string &description, bool isRequired, bool requiresValue);
 
+    void printUsage(const std::string &programName, int optc, cli_option_t *optv);
+
     // false when some unexpected token found or a required option was missing
     bool parseProgramArgs(int argc, char** argv, int optc, cli_option_t *optv);
 
